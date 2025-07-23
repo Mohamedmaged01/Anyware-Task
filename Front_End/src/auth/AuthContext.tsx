@@ -1,7 +1,14 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { HomePage } from "../pages/HomePage";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  loginStart,
+  loginSuccess,
+  logout as reduxLogout,
+} from "../slices/authSlice";
+import { RootState } from "../store";
 
 interface User {
   id: string;
@@ -23,21 +30,21 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const login = async (): Promise<boolean> => {
-    setIsLoading(true);
+    dispatch(loginStart());
     setTimeout(() => {
-      setUser({ id: "1", username: "maged" });
-      setIsLoading(false);
+      dispatch(loginSuccess({ id: "1", username: "maged" }));
     }, 300);
     return true;
   };
 
   const logout = () => {
-    setUser(null);
+    dispatch(reduxLogout());
     navigate("/");
   };
 

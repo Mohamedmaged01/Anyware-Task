@@ -1,16 +1,29 @@
 import { FileText } from "lucide-react";
 import { QuizCard } from "./QuizCard";
 import { ApiService } from "../services/ApiService";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Quiz } from "../types";
 import { useTranslation } from "react-i18next";
+import { useSelector, useDispatch } from "react-redux";
+import { setQuizzes, setQuizzesLoading } from "../slices/quizzesSlice";
+import { RootState } from "../store";
 
 export function QuizzesSection() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const dispatch = useDispatch();
+  const quizzes = useSelector(
+    (state: RootState) => (state.quizzes as any).quizzes
+  );
+  const isLoading = useSelector(
+    (state: RootState) => (state.quizzes as any).isLoading
+  );
   const { t } = useTranslation();
   useEffect(() => {
-    ApiService.getQuizzes().then(setQuizzes);
-  }, []);
+    dispatch(setQuizzesLoading(true));
+    ApiService.getQuizzes().then((data) => {
+      dispatch(setQuizzes(data));
+      dispatch(setQuizzesLoading(false));
+    });
+  }, [dispatch]);
 
   return (
     <div className="space-y-4">
@@ -24,12 +37,15 @@ export function QuizzesSection() {
       </div>
 
       <div className="space-y-4">
-        {quizzes.length === 0 && (
+        {isLoading && (
+          <div className="text-gray-500 text-center">Loading...</div>
+        )}
+        {!isLoading && quizzes.length === 0 && (
           <div className="text-gray-500 text-center">
             {t("no_quizzes", "No quizzes due.")}
           </div>
         )}
-        {quizzes.slice(0, 3).map((quiz) => (
+        {quizzes.slice(0, 3).map((quiz: any) => (
           <QuizCard
             key={quiz._id}
             title={quiz.title}

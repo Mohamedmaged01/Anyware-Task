@@ -1,16 +1,32 @@
 import { Megaphone } from "lucide-react";
 import { AnnouncementCard } from "./AnnouncementCard";
 import { ApiService } from "../services/ApiService";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Announcement } from "../types";
 import { useTranslation } from "react-i18next";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setAnnouncements,
+  setAnnouncementsLoading,
+} from "../slices/announcementsSlice";
+import { RootState } from "../store";
 
 export function AnnouncementsSection() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const dispatch = useDispatch();
+  const announcements = useSelector(
+    (state: RootState) => (state.announcements as any).announcements
+  );
+  const isLoading = useSelector(
+    (state: RootState) => (state.announcements as any).isLoading
+  );
   const { t } = useTranslation();
   useEffect(() => {
-    ApiService.getAnnouncements().then(setAnnouncements);
-  }, []);
+    dispatch(setAnnouncementsLoading(true));
+    ApiService.getAnnouncements().then((data) => {
+      dispatch(setAnnouncements(data));
+      dispatch(setAnnouncementsLoading(false));
+    });
+  }, [dispatch]);
 
   return (
     <div className="lg:col-span-2 space-y-4">
@@ -24,12 +40,15 @@ export function AnnouncementsSection() {
       </div>
 
       <div className="space-y-4">
-        {announcements.length === 0 && (
+        {isLoading && (
+          <div className="text-gray-500 text-center">Loading...</div>
+        )}
+        {!isLoading && announcements.length === 0 && (
           <div className="text-gray-500 text-center">
             {t("no_announcements", "No announcements.")}
           </div>
         )}
-        {announcements.slice(0, 4).map((a) => (
+        {announcements.slice(0, 4).map((a: any) => (
           <AnnouncementCard
             key={a._id}
             icon={<Megaphone className="w-5 h-5" />}

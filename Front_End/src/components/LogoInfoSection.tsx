@@ -13,7 +13,6 @@ export function LogoInfoSection() {
   ];
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white p-8 lg:p-16 relative overflow-hidden">
-     
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent"></div>
         <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full"></div>

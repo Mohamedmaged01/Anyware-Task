@@ -29,26 +29,28 @@ interface SidebarProps {
 
 export function Sidebar({ activeTab, onTabChange, menuItems }: SidebarProps) {
   const { t } = useTranslation();
-  const items = menuItems || [
-    { id: "dashboard", label: t("dashboard", "Dashboard"), icon: Home },
-    { id: "schedule", label: t("schedule", "Schedule"), icon: Calendar },
-    { id: "courses", label: t("courses", "Courses"), icon: BookOpen },
-    {
-      id: "gradebook",
-      label: t("gradebook", "Gradebook"),
-      icon: GraduationCap,
-    },
-    {
-      id: "performance",
-      label: t("performance", "Performance"),
-      icon: TrendingUp,
-    },
-    {
-      id: "announcements",
-      label: t("announcements", "Announcements"),
-      icon: Megaphone,
-    },
-  ];
+  const items = menuItems
+    ? menuItems.map((item) => ({ ...item, label: t(item.id) }))
+    : [
+        { id: "dashboard", label: t("dashboard"), icon: Home },
+        { id: "schedule", label: t("schedule"), icon: Calendar },
+        { id: "courses", label: t("courses"), icon: BookOpen },
+        {
+          id: "gradebook",
+          label: t("gradebook"),
+          icon: GraduationCap,
+        },
+        {
+          id: "performance",
+          label: t("performance"),
+          icon: TrendingUp,
+        },
+        {
+          id: "announcements",
+          label: t("announcements"),
+          icon: Megaphone,
+        },
+      ];
   return (
     <Drawer
       variant="permanent"
